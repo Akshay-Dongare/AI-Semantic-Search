@@ -5,11 +5,11 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <style>
       .dropbtn {
-        background-color: #04AA6D;
+        background-color: #141414;
         color: white;
         padding: 16px;
         font-size: 16px;
-        border: none;
+        border: thick solid green;
         cursor: pointer;
       }
       
@@ -23,7 +23,7 @@
         position: absolute;
         right: 0;
         background-color: #f9f9f9;
-        min-width: 160px;
+        min-width: 151px;
         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         z-index: 1;
       }
@@ -37,11 +37,11 @@
       
       .dropdown-content a:hover {background-color: #f1f1f1;}
       .dropdown:hover .dropdown-content {display: block;}
-      .dropdown:hover .dropbtn {background-color: #3e8e41;}
+      .dropdown:hover .dropbtn {background-color: green;}
       </style>
   </head>
   <body>
-    <img style=margin-left:180px;margin-top:80px; id="logo" src="/static/images/logo2.png" alt="My Logo">
+    <img style=margin-left:178px;margin-top:80px; id="logo" src="/static/images/logo2.png" alt="My Logo">
     <div class="dropdown" style="float:right;">
       <button class="dropbtn">Current Corpus</button>
       <div class="dropdown-content">
@@ -52,10 +52,10 @@
     </div>
     <form action="/search" method="GET">
       <input type="text" id="query" name="query">
-      <input type="submit" value="search">
+      <input type="submit" value=" search ">
     </form><br><br>
     <form action="/show_upload_page" method="GET">
-      <input type="submit" value="I want to upload my custom text file">
+      <input type="submit" value=" I want to upload my custom text file ">
     </form>
   </body>
 </html>
