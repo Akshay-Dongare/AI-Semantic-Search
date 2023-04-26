@@ -1,1 +1,3 @@
-OPENAI_API_KEY = "yourkeyhere"
+OPENAI_API_KEY = "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"
+PINECONE_API_KEY = "4d6a6d88-e306-445e-a0ac-6a3edb9b54ee"
+PINECONE_ENVIRONMENT = "asia-southeast1-gcp"

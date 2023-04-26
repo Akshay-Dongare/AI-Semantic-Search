@@ -5,10 +5,16 @@ import pandas as pd
 import numpy as np
 import config
 import csv
+import pinecone
 
 app = Flask(__name__)
 
 openai.api_key = config.OPENAI_API_KEY
+# initialize connection to pinecone
+pinecone.init(
+    api_key=config.PINECONE_API_KEY,
+    environment=config.PINECONE_ENVIRONMENT 
+)
 
 @app.route('/static/<path:filename>')
 def serve_static(filename):
