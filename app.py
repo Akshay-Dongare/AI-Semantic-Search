@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template,flash
+from flask import Flask, request, render_template
 import openai
 from openai.embeddings_utils import get_embedding, cosine_similarity
 import pandas as pd
@@ -6,7 +6,6 @@ import numpy as np
 import config
 import csv
 import pinecone
-from tqdm.auto import tqdm  # this is our progress bar
 
 app = Flask(__name__)
 
@@ -23,16 +22,18 @@ def serve_static(filename):
 
 @app.route('/')
 def search_form():
-  return render_template('search_form.html')
+  available_indexes = pinecone.list_indexes()
+  return render_template('search_form.html',available_indexes=available_indexes)
 
 
-@app.route('/search')
+@app.route('/search', methods=['POST'])
 def search():
     # Get the search query from the URL query string
     query = request.args.get('query')
+    selected_index_name = request.args.get('selected_index_name')
     xq = openai.Embedding.create(input=query, engine="text-embedding-ada-002")['data'][0]['embedding']
 
-    index = pinecone.Index('india')
+    index = pinecone.Index(selected_index_name)
 
     res = index.query([xq], top_k=3, include_metadata=True)
 
@@ -54,8 +55,7 @@ def upload():
 
   txtfile = request.files['txtfile']
   if txtfile.filename == '':
-    flash("hi")
-    return 'No file selected.'
+    return render_template('no_file_selected.html')
 
   if txtfile and txtfile.filename.endswith('.txt'):
     txtfile.save(txtfile.filename)  
@@ -89,9 +89,9 @@ def upload():
     index.upsert(vectors=list(to_upsert))
 
     #describe index 
-    return render_template('new_index_created.html')
+    return render_template('upserted_in_index.html')
 
-  return 'Invalid file type. Only text files are allowed.'
+  return render_template("invalid_file_type.html")
 
 if __name__ == '__main__':
   app.run(debug=True)
