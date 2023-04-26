@@ -4,6 +4,7 @@ from openai.embeddings_utils import get_embedding, cosine_similarity
 import pandas as pd
 import numpy as np
 import config
+import csv
 
 app = Flask(__name__)
 
@@ -35,5 +36,26 @@ def search():
     # Render the search results template, passing in the search query and results
     return render_template('search_results.html', query=query, results=results)
 
+@app.route('/show_upload_page')
+def show_upload_page():
+  return render_template("upload.html")
+
+@app.route('/upload',methods=['POST'])
+def upload():
+  if 'csvfile' not in request.files:
+    return 'No file uploaded.'
+
+  csvfile = request.files['csvfile']
+  if csvfile.filename == '':
+    return 'No file selected.'
+
+  if csvfile and csvfile.filename.endswith('.csv'):
+    csvdata = csvfile.read().decode('utf-8')
+    csvrows = csv.reader(csvdata.splitlines())
+    #'File uploaded and processed successfully.'
+    return render_template('create_custom_embeddings.html', csvrows=csvrows)
+
+  return 'Invalid file type. Only CSV files are allowed.'
+
 if __name__ == '__main__':
-  app.run()
+  app.run(debug=True)

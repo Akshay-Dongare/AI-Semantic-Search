@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CSV FILE READING</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+  </head>
+  <body>
+    <div id="results">
+    <h1>Uploaded CSV File</h1>
+    {% if csvrows %}
+      <ul>
+        {% for row in csvrows %}
+          <li>"{{ row }}"</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No results found.</p>
+    {% endif %}
+    </div>
+  </body>
+</html>

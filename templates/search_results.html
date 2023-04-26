@@ -14,11 +14,11 @@
     <div id="results">
     <h1>Search Results</h1>
     {% if results %}
-      <ul>
+      <ol>
         {% for result in results %}
           <li>"{{ result }}"</li>
         {% endfor %}
-      </ul>
+      </ol>
     {% else %}
       <p>No results found.</p>
     {% endif %}
