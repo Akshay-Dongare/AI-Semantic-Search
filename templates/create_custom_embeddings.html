@@ -8,11 +8,11 @@
     <div id="results">
     <h1>Uploaded CSV File</h1>
     {% if csvrows %}
-      <ul>
+      <ol>
         {% for row in csvrows %}
           <li>"{{ row }}"</li>
         {% endfor %}
-      </ul>
+      </ol>
     {% else %}
       <p>No results found.</p>
     {% endif %}

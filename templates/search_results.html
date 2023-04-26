@@ -11,6 +11,9 @@
       <input type="text" id="query" name="query" value="{{ query }}">
       <input type="submit" value="search">
     </form> 
+    <form action="/show_upload_page" method="GET">
+      <input type="submit" value="I want to upload my custom file">
+    </form>
     <div id="results">
     <h1>Search Results</h1>
     {% if results %}
