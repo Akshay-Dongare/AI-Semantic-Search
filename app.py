@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template,flash
+from flask import Flask, request, render_template
 import openai
 from openai.embeddings_utils import get_embedding, cosine_similarity
 import pandas as pd
@@ -6,6 +6,7 @@ import numpy as np
 import config
 import csv
 import pinecone
+from tqdm.auto import tqdm  # this is our progress bar
 
 app = Flask(__name__)
 
@@ -29,15 +30,15 @@ def search_form():
 def search():
     # Get the search query from the URL query string
     query = request.args.get('query')
-    
-    search_term_vector = get_embedding(query, engine="text-embedding-ada-002")
+    xq = openai.Embedding.create(input=query, engine="text-embedding-ada-002")['data'][0]['embedding']
 
-    df = pd.read_csv('fed_embeddings.csv')
-    df['embedding'] = df['embedding'].apply(eval).apply(np.array)
-    df["similarities"] = df['embedding'].apply(lambda x: cosine_similarity(x, search_term_vector))
-    sorted_by_similarity = df.sort_values("similarities", ascending=False).head(3)
+    index = pinecone.Index('india')
 
-    results = sorted_by_similarity['text'].values.tolist()
+    res = index.query([xq], top_k=3, include_metadata=True)
+
+    results = []
+    for match in res['matches']:
+      results.append((f"{match['score']:.2f}: {match['metadata']['text']}"))
 
     # Render the search results template, passing in the search query and results
     return render_template('search_results.html', query=query, results=results)
@@ -48,20 +49,48 @@ def show_upload_page():
 
 @app.route('/upload',methods=['POST'])
 def upload():
-  if 'csvfile' not in request.files:
+  if 'txtfile' not in request.files:
     return 'No file uploaded.'
 
-  csvfile = request.files['csvfile']
-  if csvfile.filename == '':
+  txtfile = request.files['txtfile']
+  if txtfile.filename == '':
     return 'No file selected.'
 
-  if csvfile and csvfile.filename.endswith('.csv'):
-    csvdata = csvfile.read().decode('utf-8')
-    csvrows = csv.reader(csvdata.splitlines())
-    #'File uploaded and processed successfully.'
-    return render_template('create_custom_embeddings.html', csvrows=csvrows)
+  if txtfile and txtfile.filename.endswith('.txt'):
+    txtfile.save(txtfile.filename)  
+    file_obj = open(txtfile.filename,"r",encoding='utf8')
+    file_data = file_obj.read()
+    txtparas = file_data.split('\n\n')
 
-  return 'Invalid file type. Only CSV files are allowed.'
+    #blankspace cannot be embedded so pre-processing is done
+    if ("" in txtparas):
+        txtparas.remove("")
+
+    #create embeddings   
+    res = openai.Embedding.create(
+        input=txtparas, engine="text-embedding-ada-002"
+    )
+
+    # extract embeddings to a list
+    embeds = [record['embedding'] for record in res['data']] #embeds is a list
+
+    index_name = str(txtfile.filename[:-4])
+    if index_name not in pinecone.list_indexes():
+        pinecone.create_index(index_name, dimension=len(embeds[0]))
+
+    # connect to index
+    index = pinecone.Index(index_name)
+
+    # upsert to Pinecone
+    ids = [str(n) for n in range(1, len(embeds[0])+1)]
+    meta = [{'text': para} for para in txtparas]
+    to_upsert = zip(ids, embeds, meta)
+    index.upsert(vectors=list(to_upsert))
+
+    #describe index 
+    return render_template('new_index_created.html')
+
+  return 'Invalid file type. Only text files are allowed.'
 
 if __name__ == '__main__':
   app.run(debug=True)

@@ -22,9 +22,6 @@ input[type=submit] {
 h1 { 
     margin-left: 50px;
 }
-ol {
-    list-style-type: none;
-}
 li {
     padding: 10px;
 }
