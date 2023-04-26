@@ -26,5 +26,14 @@
       <p>No results found.</p>
     {% endif %}
     </div>
+    <div id="results">
+    <h1>GPT3.5 Generated Answer for Query</h1>
+    {% if gpt_result %}
+      <p>{{gpt_result}}</p>
+    {% else %}
+      <p>No results found.</p>
+    {% endif %}
+    </div>
+
   </body>
 </html>

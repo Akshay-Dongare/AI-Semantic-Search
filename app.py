@@ -26,14 +26,13 @@ def search_form():
   return render_template('search_form.html',available_indexes=available_indexes)
 
 
-@app.route('/search', methods=['POST'])
+@app.route('/search')
 def search():
     # Get the search query from the URL query string
     query = request.args.get('query')
-    selected_index_name = request.args.get('selected_index_name')
     xq = openai.Embedding.create(input=query, engine="text-embedding-ada-002")['data'][0]['embedding']
 
-    index = pinecone.Index(selected_index_name)
+    index = pinecone.Index(pinecone.list_indexes()[0])
 
     res = index.query([xq], top_k=3, include_metadata=True)
 
@@ -41,8 +40,16 @@ def search():
     for match in res['matches']:
       results.append((f"{match['score']:.2f}: {match['metadata']['text']}"))
 
+    completion = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[
+      {"role": "user", "content":f"Answer this question:{query} using only this document:{res['matches'][0]['metadata']['text']}"}
+    ]
+    )
+
+    gpt_result = completion.choices[0].message.content
     # Render the search results template, passing in the search query and results
-    return render_template('search_results.html', query=query, results=results)
+    return render_template('search_results.html', query=query, results=results,gpt_result=gpt_result)
 
 @app.route('/show_upload_page')
 def show_upload_page():
@@ -77,16 +84,26 @@ def upload():
 
     index_name = str(txtfile.filename[:-4])
     if index_name not in pinecone.list_indexes():
-        pinecone.create_index(index_name, dimension=len(embeds[0]))
+      if pinecone.list_indexes() != []:
+        pinecone.delete_index(pinecone.list_indexes()[0])
+      pinecone.create_index(index_name, dimension=len(embeds[0]))
 
-    # connect to index
-    index = pinecone.Index(index_name)
+    work_around = None
+    while work_around is None:
+      try:
+        # connect to index
+        index = pinecone.Index(index_name)
 
-    # upsert to Pinecone
-    ids = [str(n) for n in range(1, len(embeds[0])+1)]
-    meta = [{'text': para} for para in txtparas]
-    to_upsert = zip(ids, embeds, meta)
-    index.upsert(vectors=list(to_upsert))
+        # upsert to Pinecone
+        ids = [str(n) for n in range(1, len(embeds[0])+1)]
+        meta = [{'text': para} for para in txtparas]
+        to_upsert = zip(ids, embeds, meta)
+        index.upsert(vectors=list(to_upsert))
+
+        work_around = 'worked'
+      except:
+        pass
+
 
     #describe index 
     return render_template('upserted_in_index.html')

@@ -41,12 +41,12 @@
       </style>
   </head>
   <body>
-    <img style=margin-top:150px; id="logo" src="/static/images/logo2.png" alt="My Logo">
+    <img style=margin-left:180px;margin-top:80px; id="logo" src="/static/images/logo2.png" alt="My Logo">
     <div class="dropdown" style="float:right;">
-      <button class="dropbtn">Choose Corpus</button>
+      <button class="dropbtn">Current Corpus</button>
       <div class="dropdown-content">
         {% for index in available_indexes %}
-          <input type="submit" name="selected_index_name" value="{{ index }}"></input>
+          <a>{{ index }}</a>
         {% endfor %}
       </div>
     </div>
