@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template,flash
 import openai
 from openai.embeddings_utils import get_embedding, cosine_similarity
 import pandas as pd
@@ -54,6 +54,7 @@ def upload():
 
   txtfile = request.files['txtfile']
   if txtfile.filename == '':
+    flash("hi")
     return 'No file selected.'
 
   if txtfile and txtfile.filename.endswith('.txt'):

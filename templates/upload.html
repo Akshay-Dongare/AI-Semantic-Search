@@ -2,9 +2,11 @@
 <html>
     <head>
     <title>Upload Text File</title>
+    <link rel="stylesheet" href="/static/css/style.css">
     </head>
     <body>
-    <h1 style=color:red>Please upload your custom text File</h1>
+    <img id="logo" src="/static/images/logo2.png" alt="My Logo">
+    <h1 style=color:green;margin-top:50px;>Please upload your custom text file</h1>
     <form action="/upload" method="POST" enctype="multipart/form-data">
         <input type="file" name="txtfile" id="txtfile">
         <input type="submit" value="Upload File">
