@@ -47,18 +47,14 @@ def search():
 
     
     scores = []
-    texts = []
+    NER_texts = []
 
     for match in res['matches']:
+      doc = nlp(match['metadata']['text'])
+      NER_texts.append(displacy.render(doc, style="ent"))
       scores.append(f"{match['score']:.2f}")
-      texts.append((f"{match['metadata']['text']}"))
 
-    results = zip(scores,texts)
-
-    #ner
-    doc = nlp(res['matches'][0]['metadata']['text'])
-    ner1=displacy.render(doc, style="ent")
-
+    results = zip(scores,NER_texts)
 
     completion = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
@@ -70,7 +66,7 @@ def search():
 
     gpt_result = completion.choices[0].message.content
     # Render the search results template, passing in the search query and results
-    return render_template('search_results.html', query=query, results=results,gpt_result=gpt_result,doc=doc,ner1=ner1)
+    return render_template('search_results.html', query=query, results=results,gpt_result=gpt_result,doc=doc)
 
 @app.route('/show_upload_page')
 def show_upload_page():

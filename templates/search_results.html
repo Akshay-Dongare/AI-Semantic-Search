@@ -36,7 +36,6 @@
     <form action="/show_upload_page" method="GET">
       <input type="submit" value="I want to upload my custom text file">
     </form>
-    <div style="overflow-x: auto; border: 1px solid #e6e9ef; border-radius: 0.25rem; padding: 1rem">{{ ner1|markdown }}</div>
     <div id="results">
     <h1>Search Results</h1>
     {% if results %}
@@ -46,10 +45,10 @@
         <th style="text-align: center">Text</th>
       </tr>
     
-      {% for score,text in results%}
+      {% for score,NER_text in results%}
       <tr>
         <td style="text-align: center">"{{ score }}"</td>
-        <td style="text-align: center">"{{ text }}"</td>
+        <td style="text-align: center">"{{ NER_text|markdown }}"</td>
       </tr>
       {% endfor %}
     
