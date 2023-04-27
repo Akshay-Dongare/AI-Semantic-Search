@@ -3,6 +3,28 @@
   <head>
     <title>Search Results</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+      #table {
+        font-family: Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+      
+      #table td, #table th {
+        border: 1px solid black;
+        padding: 8px;
+      }
+      
+      #table tr:hover {background-color: #ddd;}
+      
+      #table th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: green;
+        color: black;
+      }
+      </style>
   </head>
   <body>
     <img id="logo" src="/static/images/logo2.png" alt="My Logo">
@@ -14,20 +36,23 @@
     <form action="/show_upload_page" method="GET">
       <input type="submit" value="I want to upload my custom text file">
     </form>
+    <div style="overflow-x: auto; border: 1px solid #e6e9ef; border-radius: 0.25rem; padding: 1rem">{{ ner1|markdown }}</div>
     <div id="results">
     <h1>Search Results</h1>
     {% if results %}
-    <table>
+    <table id="table">
       <tr>
-        <th>Similarity Score</th>
-        <th>Text</th>
+        <th style="text-align: center">Similarity Score</th>
+        <th style="text-align: center">Text</th>
       </tr>
+    
+      {% for score,text in results%}
       <tr>
-        {% for score,text in results.items() %}
-          <td>"{{ score }}"</td>
-          <td>"{{ text }}"</td>
-        {% endfor %}
+        <td style="text-align: center">"{{ score }}"</td>
+        <td style="text-align: center">"{{ text }}"</td>
       </tr>
+      {% endfor %}
+    
     </table>
     {% else %}
       <p>No results found.</p>

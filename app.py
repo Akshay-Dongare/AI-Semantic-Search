@@ -1,13 +1,17 @@
 from flask import Flask, request, render_template
 import openai
-from openai.embeddings_utils import get_embedding, cosine_similarity
 import pandas as pd
 import numpy as np
 import config
 import csv
 import pinecone
+import spacy
+from spacy import displacy
+from flaskext.markdown import Markdown
+
 
 app = Flask(__name__)
+Markdown(app)
 
 openai.api_key = config.OPENAI_API_KEY
 # initialize connection to pinecone
@@ -15,6 +19,9 @@ pinecone.init(
     api_key=config.PINECONE_API_KEY,
     environment=config.PINECONE_ENVIRONMENT 
 )
+#ner
+nlp = spacy.load("en_core_web_sm")
+
 
 @app.route('/static/<path:filename>')
 def serve_static(filename):
@@ -37,24 +44,33 @@ def search():
     res = index.query([xq], top_k=3, include_metadata=True)
 
     top3_search_results_concatenated = res['matches'][0]['metadata']['text']+res['matches'][1]['metadata']['text']+res['matches'][2]['metadata']['text']
-    
-    results = {'scores': [], 'text': []}
-    for match in res['matches']:
-      results['scores'].append(f"{match['score']:.2f}")
-      results['text'].append((f"{match['metadata']['text']}"))
 
-  
+    
+    scores = []
+    texts = []
+
+    for match in res['matches']:
+      scores.append(f"{match['score']:.2f}")
+      texts.append((f"{match['metadata']['text']}"))
+
+    results = zip(scores,texts)
+
+    #ner
+    doc = nlp(res['matches'][0]['metadata']['text'])
+    ner1=displacy.render(doc, style="ent")
+
+
     completion = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=[
       {"role": "user", 
-       "content":f"I am a highly intelligent question answering bot. If you ask me a question that is rooted in truth, I will give you the answer. If you ask me a question that is nonsense, trickery, or has no clear answer, I will respond with [Invalid Question]. EXAMPLE: Q: What is human life expectancy in the United States? A: Human life expectancy in the United States is 78 years. Q: Who was president of the United States in 1955? A: Dwight D. Eisenhower was president of the United States in 1955. Q: Which party did he belong to? A: He belonged to the Republican Party. Q: What is the square root of banana? A: [Invalid Question] Q: How does a telescope work? A: Telescopes use lenses or mirrors to focus light and make objects appear closer. Q: Where were the 1992 Olympics held? A: The 1992 Olympics were held in Barcelona, Spain. Q: How many squigs are in a bonk? A: [Invalid Question] END_of_EXAMPLE Now, I will answer this question:{query} using only this document:{top3_search_results_concatenated}"}
+       "content":f"I am a highly intelligent question answering bot. If you ask me a question that is rooted in truth, I will give you the answer. If you ask me a question that is nonsense, trickery, or has no clear answer, I will respond with [Invalid Question]. Now, I will answer this question:{query} in 10 lines using only this document:{top3_search_results_concatenated}"}
     ]
     )
 
     gpt_result = completion.choices[0].message.content
     # Render the search results template, passing in the search query and results
-    return render_template('search_results.html', query=query, results=results,gpt_result=gpt_result)
+    return render_template('search_results.html', query=query, results=results,gpt_result=gpt_result,doc=doc,ner1=ner1)
 
 @app.route('/show_upload_page')
 def show_upload_page():
