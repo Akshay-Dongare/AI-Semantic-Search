@@ -48,7 +48,7 @@
       {% for score,NER_text in results%}
       <tr>
         <td style="text-align: center">"{{ score }}"</td>
-        <td style="text-align: center">"{{ NER_text|markdown }}"</td>
+        <td style="text-align: justify">"{{ NER_text|markdown }}"</td>
       </tr>
       {% endfor %}
     
