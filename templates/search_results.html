@@ -17,11 +17,18 @@
     <div id="results">
     <h1>Search Results</h1>
     {% if results %}
-    <ol>
-      {% for result in results %}
-        <li>"{{ result }}"</li>
-      {% endfor %}
-    </ol>
+    <table>
+      <tr>
+        <th>Similarity Score</th>
+        <th>Text</th>
+      </tr>
+      <tr>
+        {% for score,text in results.items() %}
+          <td>"{{ score }}"</td>
+          <td>"{{ text }}"</td>
+        {% endfor %}
+      </tr>
+    </table>
     {% else %}
       <p>No results found.</p>
     {% endif %}

@@ -36,14 +36,19 @@ def search():
 
     res = index.query([xq], top_k=3, include_metadata=True)
 
-    results = []
+    top3_search_results_concatenated = res['matches'][0]['metadata']['text']+res['matches'][1]['metadata']['text']+res['matches'][2]['metadata']['text']
+    
+    results = {'scores': [], 'text': []}
     for match in res['matches']:
-      results.append((f"{match['score']:.2f}: {match['metadata']['text']}"))
+      results['scores'].append(f"{match['score']:.2f}")
+      results['text'].append((f"{match['metadata']['text']}"))
 
+  
     completion = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=[
-      {"role": "user", "content":f"Answer this question:{query} using only this document:{res['matches'][0]['metadata']['text']}"}
+      {"role": "user", 
+       "content":f"I am a highly intelligent question answering bot. If you ask me a question that is rooted in truth, I will give you the answer. If you ask me a question that is nonsense, trickery, or has no clear answer, I will respond with [Invalid Question]. EXAMPLE: Q: What is human life expectancy in the United States? A: Human life expectancy in the United States is 78 years. Q: Who was president of the United States in 1955? A: Dwight D. Eisenhower was president of the United States in 1955. Q: Which party did he belong to? A: He belonged to the Republican Party. Q: What is the square root of banana? A: [Invalid Question] Q: How does a telescope work? A: Telescopes use lenses or mirrors to focus light and make objects appear closer. Q: Where were the 1992 Olympics held? A: The 1992 Olympics were held in Barcelona, Spain. Q: How many squigs are in a bonk? A: [Invalid Question] END_of_EXAMPLE Now, I will answer this question:{query} using only this document:{top3_search_results_concatenated}"}
     ]
     )
 
