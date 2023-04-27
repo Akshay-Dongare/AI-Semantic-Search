@@ -4,6 +4,11 @@
 * The aim of this project is to implement a semantic search using artificial intelligence. You will develop a search engine that encodes the user's query into a vector and searches for similarity within a body of text. 
 * The user can store all the text to be searched using a vector database like Pinecone. This search engine will be designed to provide accurate and relevant search results.
 
+## Notes
+* Run `app.py`
+* Update `config.py` file with your own API keys before running `app.py`
+* `india.txt` is an example corpus
+
 ## Implemented Features List:
 ### Vector Database:
 * You will need to choose a vector database like Pinecone to store the text that will be searched. The vector database will be used to store and index the text documents.
