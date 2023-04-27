@@ -20,6 +20,7 @@
 ### Multi-lingual Support: 
 * The search engine could support multiple languages, allowing users to search for documents in different languages.
 * I have provided the code in the form of comments to use Cohere's multilingual-22-12 model to generate vector embeddings for search query as well as corpus to support other languages.
+* Get your API key at https://cohere.com/ and update it in the config.py file
 ### Synonym Expansion: 
 * The search engine could include a synonym expansion feature that expands the user's query to include similar words and phrases. 
 * I have used OpenAi's gpt-3.5-turbo model to generate a list of two synonyms that I append to the search query before embedding it. 
