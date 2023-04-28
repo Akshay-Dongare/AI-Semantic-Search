@@ -12,7 +12,7 @@
 ## Implemented Features List:
 ### Vector Database:
 * You will need to choose a vector database like Pinecone to store the text that will be searched. The vector database will be used to store and index the text documents.
-* I have used Pinecone database. Generate your api key and environment name at https://app.pinecone.io/ and paste it in the config.py file
+* I have used Pinecone database. Generate your api key and environment name at https://app.pinecone.io/ and paste it in the `config.py` file
 ### Vectorization Algorithm: 
 * You will need to implement a vectorization algorithm that encodes the text documents into a vector representation. You can use Open AI’s latest text embeddings to vectorize the search query and the text documents to be searched from.
 * I have used OpenAI's text-embedding-ada-002 model to create the vector embeddings for my search query and corpus. Get your api key at https://openai.com/blog/openai-api
@@ -25,7 +25,7 @@
 ### Multi-lingual Support: 
 * The search engine could support multiple languages, allowing users to search for documents in different languages.
 * I have provided the code in the form of comments to use Cohere's multilingual-22-12 model to generate vector embeddings for search query as well as corpus to support other languages.
-* Get your API key at https://cohere.com/ and update it in the config.py file
+* Get your API key at https://cohere.com/ and update it in the `config.py` file
 ### Synonym Expansion: 
 * The search engine could include a synonym expansion feature that expands the user's query to include similar words and phrases. 
 * I have used OpenAi's gpt-3.5-turbo model to generate a list of two synonyms that I append to the search query before embedding it. 
@@ -42,5 +42,8 @@
 * Upon recieving user's custom text file, I save it on the server, parse it, make a list of paragraphs contained withing the file, create vector embeddings for each paragraph, create a new index using filename and delete current index if one is present(this is because free tier of Pinecone only allows one index per project), and finally I upsert the vector embeddings into the Pinecone index with their respective IDs and textual paragraphs included in the metadata.
 ### Integration with Third-Party Services: 
 * The search engine could be integrated with third-party services like Google Drive or Dropbox to provide a more comprehensive search experience.
-* I have added a Third Party Integration/Extra Feature of "Answering the user's search query based on top 3 search results". This feature allows the user to get a direct context-aware answer to the search query without reading through all the search results. 
-* I have implemented this using OpenAi's gpt-3.5-turbo model. I have provided the model with the search query and a concatenated string of the top three search results to ensure that the answer is context-aware and based solely on the corpus. This helps avoid bias and prior knowledge from decreasing the accuracy of the answer.
+* I have implemented a feature that allows users to sign into their Google Drive and upload a text file from there.
+* I have used Google Picker Api to achieve this. You can find your project number, cliend-id and API key at https://console.cloud.google.com/ and update it in the `templates/google_picker.html` file
+### Context-Aware Query Answering
+* I have added an Extra Feature of "Answering the user's search query based on top 3 search results". This feature allows the user to get a direct context-aware answer to the search query without reading through all the search results.
+* I have also implemented this using OpenAi's gpt-3.5-turbo model. I have provided the model with the search query and a concatenated string of the top three search results to ensure that the answer is context-aware and based solely on the corpus. This helps avoid bias and prior knowledge from decreasing the accuracy of the answer.
