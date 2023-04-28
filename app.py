@@ -9,6 +9,9 @@ import spacy
 from spacy import displacy
 from flaskext.markdown import Markdown
 #import cohere #use cohere to create embeddings using a multilingual model
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+
 
 app = Flask(__name__)
 Markdown(app)
@@ -36,7 +39,6 @@ def serve_static(filename):
 def search_form():
   available_indexes = pinecone.list_indexes()
   return render_template('search_form.html',available_indexes=available_indexes)
-
 
 @app.route('/search')
 def search():
@@ -102,7 +104,57 @@ def search():
 def show_upload_page():
   return render_template("upload.html")
 
-@app.route('/upload',methods=['POST'])
+@app.route('/google_picker')
+def show_google_picker():
+  return render_template("google_picker.html")
+
+
+@app.route('/upload_from_drive',methods=['GET','POST'])
+def upload_from_drive():
+  txtfile = request.form.get("my_file_name") #storing file name
+  file_obj = open(txtfile,"r",encoding='utf8')
+  file_data = file_obj.read()
+  txtparas = file_data.split('\n\n')
+
+  #blankspace cannot be embedded so pre-processing is done
+  if ("" in txtparas):
+      txtparas.remove("")
+
+  #create embeddings   
+  res = openai.Embedding.create(
+      input=txtparas, engine="text-embedding-ada-002"
+  )
+  #use cohere multilingual model to create embeddings if you want support for other languages
+
+  # extract embeddings to a list
+  embeds = [record['embedding'] for record in res['data']] #embeds is a list
+
+  index_name = str(txtfile[:-4])
+  if index_name not in pinecone.list_indexes():
+    if pinecone.list_indexes() != []:
+      pinecone.delete_index(pinecone.list_indexes()[0]) #deleting current index because free tier of pinecone allows creation of only one index at a time
+    pinecone.create_index(index_name, dimension=len(embeds[0]))
+
+  work_around = None #keep retrying until connection is made
+  while work_around is None:
+    try:
+      # connect to index
+      index = pinecone.Index(index_name)
+
+      # upsert to Pinecone
+      ids = [str(n) for n in range(1, len(embeds[0])+1)]
+      meta = [{'text': para} for para in txtparas]
+      to_upsert = zip(ids, embeds, meta)
+      index.upsert(vectors=list(to_upsert))
+
+      work_around = 'worked'
+    except:
+      pass
+
+  return render_template('upserted_in_index.html')
+
+
+@app.route('/upload',methods=['GET','POST'])
 def upload():
   if 'txtfile' not in request.files:
     return 'No file uploaded.'
@@ -157,4 +209,4 @@ def upload():
   return render_template("invalid_file_type.html")
 
 if __name__ == '__main__':
-  app.run(debug=True)
+  app.run(debug=True,port=8080)
