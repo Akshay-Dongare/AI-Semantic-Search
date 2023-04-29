@@ -9,6 +9,10 @@
 * Update `config.py` file with your own API keys before running `app.py`
 * `india.txt` is an example corpus
 
+## Demo
+https://youtu.be/Llk-KRBmREY
+[![IMAGE_ALT](https://img.youtube.com/vi/UmX4kyB2wfg/0.jpg)](https://www.youtube.com/watch?v=UmX4kyB2wfg)
+
 ## Implemented Features List:
 ### Vector Database:
 * You will need to choose a vector database like Pinecone to store the text that will be searched. The vector database will be used to store and index the text documents.
