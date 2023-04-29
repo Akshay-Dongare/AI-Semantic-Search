@@ -12,7 +12,8 @@
 ## Demo
 ###
 * Click the image below
-* [![IMAGE_ALT](https://img.youtube.com/vi/Llk-KRBmREY/0.jpg)](https://youtu.be/Llk-KRBmREY)
+[![IMAGE_ALT](https://img.youtube.com/vi/Llk-KRBmREY/0.jpg)](https://youtu.be/Llk-KRBmREY)
+* Or use this link: https://youtu.be/Llk-KRBmREY
 
 ## Implemented Features List:
 ### Vector Database:
