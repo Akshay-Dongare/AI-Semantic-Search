@@ -10,7 +10,9 @@
 * `india.txt` is an example corpus
 
 ## Demo
-[![IMAGE_ALT](https://img.youtube.com/vi/Llk-KRBmREY/0.jpg)](https://youtu.be/Llk-KRBmREY)
+###
+* Click the image below
+* [![IMAGE_ALT](https://img.youtube.com/vi/Llk-KRBmREY/0.jpg)](https://youtu.be/Llk-KRBmREY)
 
 ## Implemented Features List:
 ### Vector Database:
