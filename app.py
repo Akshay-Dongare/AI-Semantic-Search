@@ -1,16 +1,11 @@
 from flask import Flask, request, render_template
 import openai
-import pandas as pd
-import numpy as np
 import config
-import csv
 import pinecone
 import spacy
 from spacy import displacy
 from flaskext.markdown import Markdown
 #import cohere #use cohere to create embeddings using a multilingual model
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
 
 
 app = Flask(__name__)
