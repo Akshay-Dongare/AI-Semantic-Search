@@ -52,3 +52,7 @@
 ### Context-Aware Query Answering
 * I have added an Extra Feature of "Answering the user's search query based on top 3 search results". This feature allows the user to get a direct context-aware answer to the search query without reading through all the search results.
 * I have also implemented this using OpenAi's gpt-3.5-turbo model. I have provided the model with the search query and a concatenated string of the top three search results to ensure that the answer is context-aware and based solely on the corpus. This helps avoid bias and prior knowledge from decreasing the accuracy of the answer.
+## Reading Material for Future Reference:
+* https://serpapi.com/
+* https://developers.google.com/drive/picker/guides/sample
+* https://www.labnol.org/internet/direct-links-for-google-drive/28356/
